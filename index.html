@@ -906,7 +906,7 @@
             }
         }
 
-        /* Loading Modal */
+        /* Loading Modal - Base */
         .loading-modal {
             display: none;
             position: fixed;
@@ -923,19 +923,26 @@
         .loading-content {
             text-align: center;
             color: var(--white);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
         }
 
         .loading-icon {
             position: relative;
-            margin-bottom: 20px;
+            margin: 0 auto 20px;
+            width: 80px;
+            height: 80px;
         }
 
         .pulse-ring {
-            width: 80px;
-            height: 80px;
+            width: 100%;
+            height: 100%;
             border: 4px solid var(--secondary);
             border-radius: 50%;
             position: absolute;
+            top: 0;
+            left: 0;
             animation: pulse 2s infinite;
         }
 
@@ -945,54 +952,108 @@
             position: relative;
             z-index: 1;
             animation: spin 2s linear infinite;
+            line-height: 80px;
+        }
+
+        .loading-progress {
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
         }
 
         .progress-bar-animated {
-            width: 200px;
-            height: 4px;
+            height: 100%;
             background: var(--secondary);
-            border-radius: 2px;
             animation: loading 2s infinite;
         }
 
+        #loadingText {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* Animações */
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.2);
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes loading {
-            0% {
-                width: 0%;
-            }
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
 
-            50% {
-                width: 100%;
+        /* Responsividade - Telas médias (tablets) */
+        @media (max-width: 768px) {
+            .loading-icon {
+                width: 70px;
+                height: 70px;
             }
+            
+            .loading-symbol {
+                font-size: 35px;
+                line-height: 70px;
+            }
+            
+            #loadingText {
+                font-size: 1.1rem;
+            }
+        }
 
-            100% {
-                width: 0%;
+        /* Responsividade - Telas pequenas (smartphones) */
+        @media (max-width: 480px) {
+            .loading-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .loading-icon {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 15px;
+            }
+            
+            .loading-symbol {
+                font-size: 30px;
+                line-height: 60px;
+            }
+            
+            #loadingText {
+                font-size: 1rem;
+                margin-bottom: 15px;
+            }
+            
+            .loading-progress {
+                height: 3px;
+            }
+        }
+
+        /* Responsividade - Telas muito pequenas */
+        @media (max-width: 320px) {
+            .loading-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .loading-symbol {
+                font-size: 25px;
+                line-height: 50px;
+            }
+            
+            #loadingText {
+                font-size: 0.9rem;
             }
         }
 
