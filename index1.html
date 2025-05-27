@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smile Saúde - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4E86D4;
+            --secondary: #1BBAFF;
+            --accent: #F1B501;
+            --success: #62C516;
+            --danger: #FF6A6A;
+            --purple: #4B3FC5;
+            --white: #FFFFFF;
+            --dark: #222D5D;
+            --blue-dark: #3E6791;
+            --blue-light: #4DACD9;
+            --gray: #A8B0CE;
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--white);
+            min-height: 100vh;
+            color: var(--dark);
+            overflow-x: hidden;
+            padding-bottom: 20px;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(78, 134, 212, 0.05), rgba(27, 186, 255, 0.05));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        .container {
+            max-width: 1700px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        header {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 0;
+            margin: 10px auto;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(78, 134, 212, 0.1) inset;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(78, 134, 212, 0.1);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 32px;
+            position: relative;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            height: 56px;
+            width: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--blue-light));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(78, 134, 212, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: rotate(5deg) scale(1.05);
+            box-shadow: 0 12px 40px rgba(78, 134, 212, 0.4);
+        }
+
+        .logo i {
+            color: var(--white);
+            font-size: 24px;
+        }
+
+        .brand-text {
+            color: var(--dark);
+        }
+
+        .brand-text h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--blue-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+            text-shadow: none;
+        }
+
+        .brand-text .subtitle {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dashboard-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 24px 32px 32px;
+            margin-top: -1px;
+            border-top: 1px solid rgba(78, 134, 212, 0.1);
+        }
+
+        .dashboard-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: rgba(78, 134, 212, 0.05);
+            border-radius: 16px;
+            padding: 8px;
+        }
+
+        .dashboard-btn {
+            background: transparent;
+            color: var(--gray);
+            border: none;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(78, 134, 212, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .dashboard-btn:hover::before {
+            left: 100%;
+        }
+
+        .dashboard-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--blue-light));
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow:
+                0 10px 30px rgba(78, 134, 212, 0.3),
+                0 0 0 1px rgba(78, 134, 212, 0.1) inset;
+        }
+
+        .dashboard-btn:hover:not(.active) {
+            background: rgba(78, 134, 212, 0.1);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .dashboard-btn i {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-btn:hover i {
+            transform: scale(1.1);
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(78, 134, 212, 0.05), rgba(78, 134, 212, 0.02));
+            border-radius: 14px;
+            z-index: -1;
+        }
+
+        .filters select {
+            padding: 14px 20px;
+            border: 1px solid rgba(78, 134, 212, 0.2);
+            border-radius: 14px;
+            background: var(--white);
+            color: var(--dark);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23222D5D' viewBox='0 0 16 16'%3e%3cpath d='m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+            padding-right: 40px;
+            min-width: 180px;
+        }
+
+        .filters select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(78, 134, 212, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filters select:hover {
+            border-color: var(--primary);
+            background: rgba(78, 134, 212, 0.02);
+        }
+
+        .filters select option {
+            background: var(--white);
+            color: var(--dark);
+            padding: 8px;
+        }
+
+        /* Notification indicator */
+        .notification-dot {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, var(--accent), #FFD700);
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                margin: 15px auto;
+                border-radius: 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                padding: 20px 24px;
+                gap: 16px;
+            }
+
+            .logo-section {
+                justify-content: center;
+            }
+
+            .brand-text h1 {
+                font-size: 24px;
+                text-align: center;
+            }
+
+            .dashboard-selector {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .dashboard-btn {
+                padding: 14px 24px;
+            }
+
+            .filters {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .filters select {
+                min-width: 100%;
+            }
+        }
+
+        /* Seção de Totais Gerais */
+        .totals-section {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .totals-title,
+        .unidade-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+            background: linear-gradient(135deg, var(--primary), var(--blue-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+
+        .totals-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .totals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .total-card {
+            background: linear-gradient(135deg, var(--white) 0%, #f8f9ff 100%);
+            border-radius: 12px;
+            box-shadow: 0 5px 30px var(--primary);
+            padding: 25px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .total-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .total-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            /* border-color: var(--primary); */
+        }
+
+        .total-card.confirmacoes::before {
+            background: linear-gradient(90deg, var(--success), var(--blue-light));
+        }
+
+        .total-card.cancelamentos::before {
+            background: linear-gradient(90deg, var(--danger), #ff9999);
+        }
+
+        .total-card.taxa-confirmacao::before {
+            background: linear-gradient(90deg, var(--accent), #ffd700);
+        }
+
+        .total-card.taxa-cancelamento::before {
+            background: linear-gradient(90deg, var(--purple), #8a7fff);
+        }
+
+        .total-card h3 {
+            color: var(--dark);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .total-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .total-card.confirmacoes .value {
+            color: var(--success);
+        }
+
+        .total-card.cancelamentos .value {
+            color: var(--danger);
+        }
+
+        .total-card.taxa-confirmacao .value {
+            color: var(--accent);
+        }
+
+        .total-card.taxa-cancelamento .value {
+            color: var(--purple);
+        }
+
+        .total-card .subtitle {
+            color: var(--gray);
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .total-card .trend {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .trend.positive {
+            color: var(--success);
+        }
+
+        .trend.negative {
+            color: var(--danger);
+        }
+
+        .trend.neutral {
+            color: var(--gray);
+        }
+
+        /* Seção de Detalhamento por Unidade */
+        .units-section {
+            margin-bottom: 10px;
+        }
+
+        .units-title {
+            text-align: center;
+            color: var(--white);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .unidade-dashboard {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .unidade-dashboard:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .unidade-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9ff 0%, var(--white) 100%);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e1e5f7;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .card h3 {
+            color: var(--dark);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+            color: var(--gray);
+            font-size: 11px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .card-trend {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .card-trend span {
+            color: var(--success);
+        }
+
+        .card-trend small {
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        /* Tabelas CSS */
+        .tables-container {
+            display: grid;
+            gap: 10px;
+            max-width: 1700px;
+            margin: 0 auto;
+        }
+
+        .table-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 4px 24px rgba(34, 45, 93, 0.08);
+            border: 1px solid rgba(78, 134, 212, 0.08);
+            overflow: hidden;
+        }
+
+        .table-section h2 {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--blue-light) 100%);
+            color: var(--white);
+            padding: 24px 32px;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            border: none;
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border: none;
+            border-radius: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: var(--white);
+        }
+
+        table th {
+            background: #f8faff;
+            color: var(--dark);
+            padding: 20px 24px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid rgba(78, 134, 212, 0.1);
+            position: relative;
+        }
+
+        table th:first-child {
+            padding-left: 32px;
+        }
+
+        table th:last-child {
+            padding-right: 32px;
+        }
+
+        table td {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(78, 134, 212, 0.06);
+            color: var(--dark);
+            vertical-align: middle;
+        }
+
+        table td:first-child {
+            padding-left: 32px;
+            font-weight: 500;
+        }
+
+        table td:last-child {
+            padding-right: 32px;
+        }
+
+        table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .status-confirmada {
+            background: rgba(98, 197, 22, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(98, 197, 22, 0.2);
+        }
+
+        .status-cancelada {
+            background: rgba(255, 106, 106, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 106, 106, 0.2);
+        }
+
+        .status-pendente {
+            background: rgba(241, 181, 1, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(241, 181, 1, 0.2);
+        }
+
+        /* Pagination */
+        .pagination {
+            padding: 24px 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            background: #fafbff;
+            border-top: 1px solid rgba(78, 134, 212, 0.08);
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid rgba(78, 134, 212, 0.2);
+            background: var(--white);
+            color: var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .pagination button:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .tables-container {
+                gap: 24px;
+            }
+
+            .table-section h2 {
+                padding: 20px 24px;
+                font-size: 16px;
+            }
+
+            table th,
+            table td {
+                padding: 16px 20px;
+                font-size: 13px;
+            }
+
+            table th:first-child,
+            table td:first-child {
+                padding-left: 24px;
+            }
+
+            table th:last-child,
+            table td:last-child {
+                padding-right: 24px;
+            }
+
+            .pagination {
+                padding: 20px 24px;
+            }
+
+            .pagination button {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .table-section h2 {
+                padding: 16px 20px;
+                font-size: 15px;
+            }
+
+            table th,
+            table td {
+                padding: 12px 16px;
+                font-size: 12px;
+            }
+
+            table th:first-child,
+            table td:first-child {
+                padding-left: 20px;
+            }
+
+            table th:last-child,
+            table td:last-child {
+                padding-right: 20px;
+            }
+
+            .status-badge {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .pagination {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 32px;
+            color: var(--gray);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 48px;
+        }
+
+        .loading::after {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(78, 134, 212, 0.2);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading Modal */
+        .loading-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(34, 45, 93, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .loading-icon {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .pulse-ring {
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--secondary);
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-symbol {
+            font-size: 40px;
+            color: var(--secondary);
+            position: relative;
+            z-index: 1;
+            animation: spin 2s linear infinite;
+        }
+
+        .progress-bar-animated {
+            width: 200px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+            animation: loading 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes loading {
+            0% {
+                width: 0%;
+            }
+
+            50% {
+                width: 100%;
+            }
+
+            100% {
+                width: 0%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .logo {
+                position: static;
+            }
+
+            .total-card .value {
+                font-size: 24px;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* ESTILO PARA O MODAL DE "Seção de Totais Gerais" */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 1300px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .modal-table th, .modal-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .modal-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            background-color: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .modal-footer button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .modal-footer button:hover {
+            background-color: var(--blue-dark);
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <i class="fas fa-heartbeat"></i>
+                        <div class="notification-dot"></div>
+                    </div>
+                    <div class="brand-text">
+                        <h1>Smile Saúde</h1>
+                        <div class="subtitle">Gestão de Agendamentos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <div class="dashboard-selector">
+                    <button class="dashboard-btn active" data-type="consultas">
+                        <i class="fas fa-stethoscope"></i>
+                        Consultas
+                    </button>
+                    <button class="dashboard-btn" data-type="terapias">
+                        <i class="fas fa-hand-holding-medical"></i>
+                        Terapias
+                    </button>
+                    <button class="dashboard-btn" data-type="procedimentos">
+                        <i class="fas fa-procedures"></i> <!-- Ícone mais adequado -->
+                        Procedimentos
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <select id="periodo">
+                            <option value="7">Últimos 7 dias</option>
+                            <option value="15">Últimos 15 dias</option>
+                            <option value="30">Últimos 30 dias</option>
+                            <option value="90">Últimos 90 dias</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select id="unidade">
+                            <option value="todas">Todas as Unidades</option>
+                            <option value="delman">Mais Saúde - Delman</option>
+                            <option value="jaguaribe">Mais Saúde - Jaguaribe</option>
+                            <option value="campina">Mais Saúde - Campina Grande</option>
+                            <option value="centro">Mais Saúde - Centro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Seção de Totais Gerais -->
+        <div class="totals-section">
+            <h2 class="totals-title">
+                <i class="fas fa-chart-bar" style="margin-right: 10px; color: var(--primary);"></i>
+                Resumo Geral - Todas as Unidades
+            </h2>
+            <div class="totals-grid">
+                <div class="total-card confirmacoes">
+                    <h3>Total de Confirmações</h3>
+                    <div class="value" id="total-geral-confirmacoes">0</div>
+                    <div class="subtitle">Período selecionado</div>
+                    <div class="trend neutral" id="trend-geral-confirmacoes">
+                        <i class="fas fa-minus"></i>
+                        <span>0</span> vs período anterior
+                    </div>
+                </div>
+                <div class="total-card cancelamentos">
+                    <h3>Total de Cancelamentos</h3>
+                    <div class="value" id="total-geral-cancelamentos">0</div>
+                    <div class="subtitle">Período selecionado</div>
+                    <div class="trend neutral" id="trend-geral-cancelamentos">
+                        <i class="fas fa-minus"></i>
+                        <span>0</span> vs período anterior
+                    </div>
+                </div>
+                <div class="total-card taxa-confirmacao">
+                    <h3>Taxa Geral de Confirmação</h3>
+                    <div class="value" id="taxa-geral-confirmacao">0%</div>
+                    <div class="subtitle">Média do período</div>
+                    <div class="trend neutral" id="trend-taxa-geral-confirmacao">
+                        <i class="fas fa-minus"></i>
+                        <span>0%</span> vs período anterior
+                    </div>
+                </div>
+                <div class="total-card taxa-cancelamento">
+                    <h3>Taxa Geral de Cancelamento</h3>
+                    <div class="value" id="taxa-geral-cancelamento">0%</div>
+                    <div class="subtitle">Média do período</div>
+                    <div class="trend neutral" id="trend-taxa-geral-cancelamento">
+                        <i class="fas fa-minus"></i>
+                        <span>0%</span> vs período anterior
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Detalhamento por Unidade -->
+        <div class="units-section">
+            <h2 class="units-title">
+                <i class="fas fa-building" style="margin-right: 10px;"></i>
+                Detalhamento por Unidade
+            </h2>
+
+            <div class="dashboard-grid">
+                <!-- Mais Saúde - Delman -->
+                <div class="unidade-dashboard">
+                    <h2 class="unidade-title">
+                        <i class="fas fa-hospital" style="margin-right: 8px; color: var(--primary);"></i>
+                        Mais Saúde - Delman
+                    </h2>
+                    <div class="dashboard">
+                        <div class="card">
+                            <h3>Total de Confirmações</h3>
+                            <p id="total-confirmacoes-delman">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-confirmacoes-delman">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Total de Cancelamentos</h3>
+                            <p id="total-cancelamentos-delman">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-cancelamentos-delman">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Confirmação</h3>
+                            <p id="taxa-confirmacao-delman">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-delman">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Cancelamento</h3>
+                            <p id="taxa-cancelamento-delman">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-cancelamento-delman">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mais Saúde - Jaguaribe -->
+                <div class="unidade-dashboard">
+                    <h2 class="unidade-title">
+                        <i class="fas fa-hospital" style="margin-right: 8px; color: var(--primary);"></i>
+                        Mais Saúde - Jaguaribe
+                    </h2>
+                    <div class="dashboard">
+                        <div class="card">
+                            <h3>Total de Confirmações</h3>
+                            <p id="total-confirmacoes-jaguaribe">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-confirmacoes-jaguaribe">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Total de Cancelamentos</h3>
+                            <p id="total-cancelamentos-jaguaribe">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-cancelamentos-jaguaribe">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Confirmação</h3>
+                            <p id="taxa-confirmacao-jaguaribe">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-jaguaribe">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Cancelamento</h3>
+                            <p id="taxa-cancelamento-jaguaribe">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-cancelamento-jaguaribe">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mais Saúde - Campina Grande -->
+                <div class="unidade-dashboard">
+                    <h2 class="unidade-title">
+                        <i class="fas fa-hospital" style="margin-right: 8px; color: var(--primary);"></i>
+                        Mais Saúde - Campina Grande
+                    </h2>
+                    <div class="dashboard">
+                        <div class="card">
+                            <h3>Total de Confirmações</h3>
+                            <p id="total-confirmacoes-campina">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-confirmacoes-campina">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Total de Cancelamentos</h3>
+                            <p id="total-cancelamentos-campina">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-cancelamentos-campina">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Confirmação</h3>
+                            <p id="taxa-confirmacao-campina">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-campina">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Cancelamento</h3>
+                            <p id="taxa-cancelamento-campina">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-cancelamento-campina">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mais Saúde - Centro -->
+                <div class="unidade-dashboard">
+                    <h2 class="unidade-title">
+                        <i class="fas fa-hospital" style="margin-right: 8px; color: var(--primary);"></i>
+                        Mais Saúde - Centro
+                    </h2>
+                    <div class="dashboard">
+                        <div class="card">
+                            <h3>Total de Confirmações</h3>
+                            <p id="total-confirmacoes-centro">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-confirmacoes-centro">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Total de Cancelamentos</h3>
+                            <p id="total-cancelamentos-centro">0</p>
+                            <small class="card-subtitle"><strong>Últimas 24h</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-cancelamentos-centro">0</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Confirmação</h3>
+                            <p id="taxa-confirmacao-centro">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-centro">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Taxa de Cancelamento</h3>
+                            <p id="taxa-cancelamento-centro">0%</p>
+                            <small class="card-subtitle"><strong>Média do período</strong></small>
+                            <div class="card-trend">
+                                <span id="trend-taxa-cancelamento-centro">0%</span>
+                                <small><strong>vs período anterior</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tables-container">
+            <div class="table-section">
+                <h2>Consultas Confirmadas</h2>
+                <div class="table-wrapper">
+                    <table id="confirmadas">
+                        <thead>
+                            <tr>
+                                <th>Beneficiário</th>
+                                <th>Data da Consulta</th>
+                                <th>Especialidade</th>
+                                <th>Médico</th>
+                                <th>Unidade</th>
+                                <th>Horário</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="confirmadas-pagination">
+                    <button>← Anterior</button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>Próximo →</button>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <h2>Consultas Canceladas</h2>
+                <div class="table-wrapper">
+                    <table id="canceladas">
+                        <thead>
+                            <tr>
+                                <th>Beneficiário</th>
+                                <th>Data da Consulta</th>
+                                <th>Especialidade</th>
+                                <th>Médico</th>
+                                <th>Unidade</th>
+                                <th>Horário</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modais de Detalhes -->
+    <div id="modalDetalhes" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modalTitle">Detalhes</h2>
+            <div class="modal-body">
+                <table id="tabelaDetalhes">
+                    <thead>
+                        <tr>
+                            <th>Beneficiário</th>
+                            <th>Data da Consulta</th>
+                            <th>Especialidade</th>
+                            <th>Médico</th>
+                            <th>Unidade</th>
+                            <th>Horário</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Loading -->
+    <div id="loadingModal" class="loading-modal">
+        <div class="loading-content">
+            <div class="loading-icon">
+                <div class="pulse-ring"></div>
+                <i class="fas fa-stethoscope loading-symbol"></i>
+            </div>
+            <h2 id="loadingText">Carregando Consultas...</h2>
+            <div class="loading-progress">
+                <div class="progress-bar-animated"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Loading -->
+    <div id="loadingModal" class="loading-modal">
+        <div class="loading-content">
+            <div class="loading-icon">
+                <div class="pulse-ring"></div>
+                <i class="fas fa-chart-bar loading-symbol"></i>
+            </div>
+            <h2 id="loadingText">Carregando Dados...</h2>
+            <div class="loading-progress">
+                <div class="progress-bar-animated"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO MODAL PARA RESUMO GERAL - TODAS UNIDADES -->
+    <div class="modal-overlay" id="modal-confirmacoes">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Detalhes das Confirmações</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Dados detalhados das confirmações por unidade:</p>
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Unidade</th>
+                            <th>Confirmações</th>
+                            <th>Variação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Unidade A</td>
+                            <td>1,250</td>
+                            <td class="positive">+5%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade B</td>
+                            <td>980</td>
+                            <td class="neutral">0%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade C</td>
+                            <td>1,520</td>
+                            <td class="negative">-3%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Cancelamentos -->
+    <div class="modal-overlay" id="modal-cancelamentos">
+        <div class="modal-container">
+            <div class="modal-header" style="background-color: var(--danger);">
+                <h3>Detalhes dos Cancelamentos</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Dados detalhados dos cancelamentos por unidade:</p>
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Unidade</th>
+                            <th>Cancelamentos</th>
+                            <th>Variação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Unidade A</td>
+                            <td>120</td>
+                            <td class="negative">+8%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade B</td>
+                            <td>85</td>
+                            <td class="positive">-2%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade C</td>
+                            <td>150</td>
+                            <td class="negative">+12%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Taxa de Confirmação -->
+    <div class="modal-overlay" id="modal-taxa-confirmacao">
+        <div class="modal-container">
+            <div class="modal-header" style="background-color: var(--success);">
+                <h3>Detalhes da Taxa de Confirmação</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Taxa de confirmação por unidade:</p>
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Unidade</th>
+                            <th>Taxa Atual</th>
+                            <th>Taxa Anterior</th>
+                            <th>Variação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Unidade A</td>
+                            <td>92%</td>
+                            <td>90%</td>
+                            <td class="positive">+2%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade B</td>
+                            <td>88%</td>
+                            <td>88%</td>
+                            <td class="neutral">0%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade C</td>
+                            <td>85%</td>
+                            <td>87%</td>
+                            <td class="negative">-2%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Taxa de Cancelamento -->
+    <div class="modal-overlay" id="modal-taxa-cancelamento">
+        <div class="modal-container">
+            <div class="modal-header" style="background-color: var(--danger);">
+                <h3>Detalhes da Taxa de Cancelamento</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Taxa de cancelamento por unidade:</p>
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Unidade</th>
+                            <th>Taxa Atual</th>
+                            <th>Taxa Anterior</th>
+                            <th>Variação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Unidade A</td>
+                            <td>8%</td>
+                            <td>10%</td>
+                            <td class="positive">-2%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade B</td>
+                            <td>12%</td>
+                            <td>12%</td>
+                            <td class="neutral">0%</td>
+                        </tr>
+                        <tr>
+                            <td>Unidade C</td>
+                            <td>15%</td>
+                            <td>13%</td>
+                            <td class="negative">+2%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive functionality for dashboard buttons
+        document.querySelectorAll('.dashboard-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.dashboard-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Add a subtle animation feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Enhanced select interactions
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', function () {
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+
+        // Dynamic gradient animation for the background
+        let gradientAngle = 135;
+        setInterval(() => {
+            gradientAngle += 0.5;
+            document.body.style.background = `linear-gradient(${gradientAngle}deg, var(--primary) 0%, var(--blue-dark) 50%, var(--purple) 100%)`;
+        }, 100);
+    </script>
+
+    <script>
+        // Dados simulados para demonstração
+        const dadosSimulados = {
+            consultas: {
+                geral: {
+                    confirmacoes: 2847,
+                    cancelamentos: 312,
+                    taxaConfirmacao: 90.1,
+                    taxaCancelamento: 9.9
+                },
+                delman: {
+                    confirmacoes: 756,
+                    cancelamentos: 89,
+                    taxaConfirmacao: 89.5,
+                    taxaCancelamento: 10.5
+                },
+                jaguaribe: {
+                    confirmacoes: 692,
+                    cancelamentos: 78,
+                    taxaConfirmacao: 89.9,
+                    taxaCancelamento: 10.1
+                },
+                campina: {
+                    confirmacoes: 834,
+                    cancelamentos: 91,
+                    taxaConfirmacao: 90.2,
+                    taxaCancelamento: 9.8
+                },
+                centro: {
+                    confirmacoes: 565,
+                    cancelamentos: 54,
+                    taxaConfirmacao: 91.3,
+                    taxaCancelamento: 8.7
+                }
+            }
+        };
+
+        // Função para formatar números
+        function formatarNumero(numero) {
+            return numero.toLocaleString('pt-BR');
+        }
+
+        // Função para determinar classe de trend
+        function getTrendClass(valor) {
+            if (valor > 0) return 'positive';
+            if (valor < 0) return 'negative';
+            return 'neutral';
+        }
+
+        // Função para obter ícone do trend
+        function getTrendIcon(valor) {
+            if (valor > 0) return 'fas fa-arrow-up';
+            if (valor < 0) return 'fas fa-arrow-down';
+            return 'fas fa-minus';
+        }
+
+        // Função para atualizar totais gerais
+        function atualizarTotaisGerais() {
+            const dados = dadosSimulados.consultas.geral;
+
+            // Atualizar valores
+            document.getElementById('total-geral-confirmacoes').textContent = formatarNumero(dados.confirmacoes);
+            document.getElementById('total-geral-cancelamentos').textContent = formatarNumero(dados.cancelamentos);
+            document.getElementById('taxa-geral-confirmacao').textContent = dados.taxaConfirmacao.toFixed(1) + '%';
+            document.getElementById('taxa-geral-cancelamento').textContent = dados.taxaCancelamento.toFixed(1) + '%';
+
+            // Simular trends (valores aleatórios para demonstração)
+            const trends = [
+                { elemento: 'trend-geral-confirmacoes', valor: Math.floor(Math.random() * 200 - 100) },
+                { elemento: 'trend-geral-cancelamentos', valor: Math.floor(Math.random() * 50 - 25) },
+                { elemento: 'trend-taxa-geral-confirmacao', valor: (Math.random() * 10 - 5).toFixed(1) },
+                { elemento: 'trend-taxa-geral-cancelamento', valor: (Math.random() * 5 - 2.5).toFixed(1) }
+            ];
+
+            trends.forEach(trend => {
+                const elemento = document.getElementById(trend.elemento);
+                const valor = parseFloat(trend.valor);
+                elemento.className = `trend ${getTrendClass(valor)}`;
+                elemento.innerHTML = `
+                    <i class="${getTrendIcon(valor)}"></i>
+                    <span>${Math.abs(valor)}${trend.elemento.includes('taxa') ? '%' : ''}</span> vs período anterior
+                `;
+            });
+        }
+
+        // Função para atualizar dados das unidades
+        function atualizarDadosUnidades() {
+            const unidades = ['delman', 'jaguaribe', 'campina', 'centro'];
+
+            unidades.forEach(unidade => {
+                const dados = dadosSimulados.consultas[unidade];
+
+                // Atualizar valores
+                document.getElementById(`total-confirmacoes-${unidade}`).textContent = formatarNumero(dados.confirmacoes);
+                document.getElementById(`total-cancelamentos-${unidade}`).textContent = formatarNumero(dados.cancelamentos);
+                document.getElementById(`taxa-confirmacao-${unidade}`).textContent = dados.taxaConfirmacao.toFixed(1) + '%';
+                document.getElementById(`taxa-cancelamento-${unidade}`).textContent = dados.taxaCancelamento.toFixed(1) + '%';
+
+                // Simular trends
+                const trendConfirmacoes = Math.floor(Math.random() * 50 - 25);
+                const trendCancelamentos = Math.floor(Math.random() * 20 - 10);
+                const trendTaxaConfirmacao = (Math.random() * 5 - 2.5).toFixed(1);
+                const trendTaxaCancelamento = (Math.random() * 3 - 1.5).toFixed(1);
+
+                document.getElementById(`trend-confirmacoes-${unidade}`).textContent = Math.abs(trendConfirmacoes);
+                document.getElementById(`trend-cancelamentos-${unidade}`).textContent = Math.abs(trendCancelamentos);
+                document.getElementById(`trend-taxa-${unidade}`).textContent = Math.abs(trendTaxaConfirmacao) + '%';
+                document.getElementById(`trend-taxa-cancelamento-${unidade}`).textContent = Math.abs(trendTaxaCancelamento) + '%';
+            });
+        }
+
+        // Função para popular tabelas com dados simulados
+        function popularTabelas() {
+            const consultasConfirmadas = [
+                ['João Silva Santos', '28/05/2024', 'Cardiologia', 'Dr. Carlos Mendes', 'Mais Saúde - Delman', '14:30', 'confirmada'],
+                ['Maria Oliveira Lima', '28/05/2024', 'Dermatologia', 'Dra. Ana Costa', 'Mais Saúde - Jaguaribe', '09:15', 'confirmada'],
+                ['Pedro Almeida Rocha', '28/05/2024', 'Ortopedia', 'Dr. José Ferreira', 'Mais Saúde - Campina', '16:00', 'confirmada'],
+                ['Ana Carolina Souza', '29/05/2024', 'Ginecologia', 'Dra. Lucia Santos', 'Mais Saúde - Centro', '10:45', 'confirmada'],
+                ['Roberto Carlos Silva', '29/05/2024', 'Neurologia', 'Dr. Fernando Lima', 'Mais Saúde - Delman', '15:20', 'confirmada']
+            ];
+
+            const consultasCanceladas = [
+                ['Teresa Moreira Cruz', '27/05/2024', 'Pediatria', 'Dra. Sandra Oliveira', 'Mais Saúde - Jaguaribe', '08:30', 'cancelada'],
+                ['Carlos Eduardo Nunes', '27/05/2024', 'Urologia', 'Dr. Ricardo Alves', 'Mais Saúde - Centro', '13:15', 'cancelada'],
+                ['Francisca Lima Santos', '28/05/2024', 'Oftalmologia', 'Dr. Paulo Henrique', 'Mais Saúde - Campina', '11:00', 'cancelada']
+            ];
+
+            // Popular tabela de confirmadas
+            const tabelaConfirmadas = document.querySelector('#confirmadas tbody');
+            tabelaConfirmadas.innerHTML = '';
+            consultasConfirmadas.forEach(consulta => {
+                const row = tabelaConfirmadas.insertRow();
+                consulta.forEach((dado, index) => {
+                    const cell = row.insertCell();
+                    if (index === 6) { // Última coluna (status)
+                        const badge = document.createElement('span');
+                        badge.className = `status-badge status-${dado}`;
+                        badge.textContent = dado === 'confirmada' ? 'Confirmada' : 'Cancelada';
+                        cell.appendChild(badge);
+                    } else {
+                        cell.textContent = dado;
+                    }
+                });
+            });
+
+            // Popular tabela de canceladas
+            const tabelaCanceladas = document.querySelector('#canceladas tbody');
+            tabelaCanceladas.innerHTML = '';
+            consultasCanceladas.forEach(consulta => {
+                const row = tabelaCanceladas.insertRow();
+                consulta.forEach((dado, index) => {
+                    const cell = row.insertCell();
+                    if (index === 6) { // Última coluna (status)
+                        const badge = document.createElement('span');
+                        badge.className = `status-badge status-${dado}`;
+                        badge.textContent = dado === 'confirmada' ? 'Confirmada' : 'Cancelada';
+                        cell.appendChild(badge);
+                    } else {
+                        cell.textContent = dado;
+                    }
+                });
+            });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mostrar loading
+            document.getElementById('loadingModal').style.display = 'flex';
+
+            // Simular carregamento
+            setTimeout(() => {
+                atualizarTotaisGerais();
+                atualizarDadosUnidades();
+                popularTabelas();
+
+                // Esconder loading
+                document.getElementById('loadingModal').style.display = 'none';
+            }, 2000);
+
+            // Event listeners para filtros
+            document.getElementById('periodo').addEventListener('change', function () {
+                document.getElementById('loadingModal').style.display = 'flex';
+                setTimeout(() => {
+                    atualizarTotaisGerais();
+                    atualizarDadosUnidades();
+                    document.getElementById('loadingModal').style.display = 'none';
+                }, 1500);
+            });
+
+            document.getElementById('unidade').addEventListener('change', function () {
+                const unidadeSelecionada = this.value;
+                const unidadeDashboards = document.querySelectorAll('.unidade-dashboard');
+
+                if (unidadeSelecionada === 'todas') {
+                    unidadeDashboards.forEach(dashboard => {
+                        dashboard.style.display = 'block';
+                    });
+                } else {
+                    unidadeDashboards.forEach(dashboard => {
+                        const titulo = dashboard.querySelector('.unidade-title').textContent.toLowerCase();
+                        if (titulo.includes(unidadeSelecionada)) {
+                            dashboard.style.display = 'block';
+                        } else {
+                            dashboard.style.display = 'none';
+                        }
+                    });
+                }
+            });
+
+            // Event listeners para botões do dashboard
+            document.querySelectorAll('.dashboard-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.dashboard-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const tipo = this.dataset.type;
+
+                    // Atualiza o texto do loading
+                    document.getElementById('loadingText').textContent =
+                        tipo === 'consultas' ? 'Carregando Consultas...' :
+                            tipo === 'terapias' ? 'Carregando Terapias...' :
+                                'Carregando Procedimentos...';
+
+                    // Atualiza os títulos das tabelas
+                    const titulos = document.querySelectorAll('.table-section h2');
+                    const ths = document.querySelectorAll('table th:nth-child(2)');
+
+                    if (tipo === 'consultas') {
+                        titulos[0].textContent = 'Consultas Confirmadas';
+                        titulos[1].textContent = 'Consultas Canceladas';
+                        ths.forEach(th => th.textContent = 'Data da Consulta');
+                    }
+                    else if (tipo === 'terapias') {
+                        titulos[0].textContent = 'Terapias Confirmadas';
+                        titulos[1].textContent = 'Terapias Canceladas';
+                        ths.forEach(th => th.textContent = 'Data da Terapia');
+                    }
+                    else { // procedimentos
+                        titulos[0].textContent = 'Procedimentos Confirmados';
+                        titulos[1].textContent = 'Procedimentos Cancelados';
+                        ths.forEach(th => th.textContent = 'Data do Procedimento');
+                    }
+
+                    document.getElementById('loadingModal').style.display = 'flex';
+                    setTimeout(() => {
+                        atualizarTotaisGerais();
+                        atualizarDadosUnidades();
+                        popularTabelas();
+                        document.getElementById('loadingModal').style.display = 'none';
+                    }, 1500);
+                });
+            });
+
+            // Event listener para fechar modal
+            document.querySelector('.close-button').addEventListener('click', function () {
+                document.getElementById('modalDetalhes').style.display = 'none';
+            });
+
+            // Fechar modal clicando fora
+            window.addEventListener('click', function (event) {
+                const modal = document.getElementById('modalDetalhes');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Função para animar contadores
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = Math.floor(progress * (end - start) + start);
+                element.textContent = formatarNumero(current);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Adicionar animações de hover nos cards
+        document.querySelectorAll('.total-card, .card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adiciona classes para estilização das tendências
+            document.querySelectorAll('.positive').forEach(el => {
+                el.innerHTML = `<i class="fas fa-arrow-up"></i> ${el.textContent}`;
+                el.style.color = 'var(--success)';
+            });
+            
+            document.querySelectorAll('.negative').forEach(el => {
+                el.innerHTML = `<i class="fas fa-arrow-down"></i> ${el.textContent}`;
+                el.style.color = 'var(--danger)';
+            });
+            
+            document.querySelectorAll('.neutral').forEach(el => {
+                el.innerHTML = `<i class="fas fa-minus"></i> ${el.textContent}`;
+                el.style.color = 'var(--accent)';
+            });
+
+            // Mapeamento dos cards para seus respectivos modais
+            const cardModalMap = {
+                'confirmacoes': 'modal-confirmacoes',
+                'cancelamentos': 'modal-cancelamentos',
+                'taxa-confirmacao': 'modal-taxa-confirmacao',
+                'taxa-cancelamento': 'modal-taxa-cancelamento'
+            };
+
+            // Textos de loading personalizados para cada card
+            const loadingTexts = {
+                'confirmacoes': 'Carregando dados de confirmações...',
+                'cancelamentos': 'Carregando dados de cancelamentos...',
+                'taxa-confirmacao': 'Calculando taxas de confirmação...',
+                'taxa-cancelamento': 'Calculando taxas de cancelamento...'
+            };
+
+            // Adiciona event listeners para os cards (agora na div pai)
+            document.querySelectorAll('.total-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const cardType = this.classList[1]; // Pega a segunda classe (confirmacoes, cancelamentos, etc)
+                    const modalId = cardModalMap[cardType];
+                    
+                    if (modalId) {
+                        // Mostra o loading
+                        const loadingModal = document.getElementById('loadingModal');
+                        const loadingText = document.getElementById('loadingText');
+                        
+                        // Define o texto de loading específico
+                        loadingText.textContent = loadingTexts[cardType] || 'Carregando dados...';
+                        
+                        // Exibe o loading
+                        loadingModal.style.display = 'flex';
+                        
+                        // Simula um tempo de carregamento (1.5 segundos)
+                        setTimeout(() => {
+                            // Esconde o loading
+                            loadingModal.style.display = 'none';
+                            
+                            // Mostra o modal
+                            const modal = document.getElementById(modalId);
+                            if (modal) {
+                                modal.classList.add('active');
+                                document.body.style.overflow = 'hidden';
+                            }
+                        }, 1500);
+                    }
+                });
+            });
+
+            // Fechar modal ao clicar no botão de fechar ou no overlay
+            document.querySelectorAll('.modal-close, .modal-close-btn, .modal-overlay').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    // Evita fechar ao clicar dentro do modal-container
+                    if (e.target.classList.contains('modal-overlay') || 
+                        e.target.classList.contains('modal-close') || 
+                        e.target.classList.contains('modal-close-btn')) {
+                        document.querySelectorAll('.modal-overlay').forEach(modal => {
+                            modal.classList.remove('active');
+                        });
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            });
+
+            // Fechar modal com a tecla ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        modal.classList.remove('active');
+                    });
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
